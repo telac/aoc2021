@@ -2,7 +2,8 @@ package main
 
 import (
     "os"
-    "aoc/day03"
+    day03 "aoc/day03"
+    day04 "aoc/day04"
     "time"
     "fmt"
 )
@@ -10,6 +11,7 @@ import (
 func main() {
     tasks := map[string]func(){
         "3": day03.Day03,
+        "4": day04.Day04,
     }
     
     if len(os.Args) > 1 {
