@@ -78,7 +78,7 @@ func isWinner(markedNumbers []int, board []int) winStats {
     var col_counts [5]int
     var row_counts [5]int
     for i, val := range markedTiles {
-        if val.marked == true {
+        if val.marked {
             col_counts[i % nx] += 1
             row_counts[i / nx] += 1 
         }
@@ -106,7 +106,7 @@ func isWinner(markedNumbers []int, board []int) winStats {
 func getPoints(winningBoard []boardPos, move int) int {
     score := 0
     for _, val := range winningBoard {
-        if val.marked == false {
+        if !val.marked {
             score += val.value
         }
     }

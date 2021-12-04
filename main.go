@@ -15,19 +15,19 @@ func main() {
     }
     
     if len(os.Args) > 1 {
-        task_num := os.Args[1]
+        taskNum := os.Args[1]
         start := time.Now()
-        tasks[task_num]()
+        tasks[taskNum]()
         duration := time.Since(start)
         fmt.Println("Time elapsed: ", duration)
 
     } else {
-        total_time := time.Now()
+        totalTime := time.Now()
         for _, element := range tasks {
             element()
         }
-        total_duration := time.Since(total_time)
-        fmt.Println("Total time elapsed for all tasks: ", total_duration)
+        totalDuration := time.Since(totalTime)
+        fmt.Println("Total time elapsed for all tasks: ", totalDuration)
     }
 }
 
