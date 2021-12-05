@@ -90,7 +90,7 @@ func min(x int, y int) int {
 	return y
 }
 
-func buildLines(board Board) []int {
+func buildLines(board Board, vertical bool) []int {
 	lines := make([]int, board.nx * board.ny)
 	for _, coords := range board.coordinates {
 		horizontalStartpoint := min(coords.x1, coords.x2)
@@ -99,7 +99,7 @@ func buildLines(board Board) []int {
 		verticalEndpoint := max(coords.y1, coords.y2)
 		horizontalDistance := horizontalEndpoint - horizontalStartpoint
 		verticalDistance := verticalEndpoint - verticalStartpoint
-		if horizontalDistance > 0 && verticalDistance > 0  {
+		if horizontalDistance > 0 && verticalDistance > 0 && vertical  {
 			startY := coords.y1
 			endY := coords.y2
 			if coords.x1 > coords.x2 {
@@ -155,10 +155,14 @@ func Day05() {
     data, _ := ioutil.ReadFile(pwd + "/day05/input")
 	lines := strings.Split(string(data), "\n")
 	board := buildBoard(lines)
-	intersections := buildLines(board)
-	points_1 := countPoints(intersections)
-	visualizeBoard(intersections, board)
-	fmt.Println(points_1)
+	intersections1 := buildLines(board, false)
+	points1 := countPoints(intersections1)
+	//visualizeBoard(intersections1, board)
+	fmt.Println(points1)
+	intersections2 := buildLines(board, true)
+	points2 := countPoints(intersections2)
+	//visualizeBoard(intersections2, board)
+	fmt.Println(points2)
 
 
 }
