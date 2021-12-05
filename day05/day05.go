@@ -134,7 +134,7 @@ func visualizeBoard(intersections []int, board Board) {
 	lineBuf := make([]int, board.nx)
 	for i := 0; i < board.nx * board.ny; i++ {
 		lineBuf[i % board.nx] = intersections[i]
-		if i % board.nx == 9 {
+		if i % board.nx == board.nx - 1 {
 			fmt.Println(lineBuf)
 		}
 	}
