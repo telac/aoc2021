@@ -150,7 +150,7 @@ func countPoints(intersections []int) int {
 	return points
 }
 
-func Day05() {
+func Day05() (int, int) {
 	pwd, _ := os.Getwd()
     data, _ := ioutil.ReadFile(pwd + "/day05/input")
 	lines := strings.Split(string(data), "\n")
@@ -158,11 +158,9 @@ func Day05() {
 	intersections1 := buildLines(board, false)
 	points1 := countPoints(intersections1)
 	//visualizeBoard(intersections1, board)
-	fmt.Println(points1)
 	intersections2 := buildLines(board, true)
 	points2 := countPoints(intersections2)
 	//visualizeBoard(intersections2, board)
-	fmt.Println(points2)
-
-
+	return points1, points2
+		
 }

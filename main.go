@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-    tasks := map[string]func(){
+    tasks := map[string]func() (int,int){
         "3": day03.Day03,
         "4": day04.Day04,
         "5": day05.Day05,
@@ -19,7 +19,9 @@ func main() {
     if len(os.Args) > 1 {
         taskNum := os.Args[1]
         start := time.Now()
-        tasks[taskNum]()
+        answer1, answer2 := tasks[taskNum]()
+        fmt.Println("Answer 1: ", answer1)
+        fmt.Println("Answer 2: ", answer2)
         duration := time.Since(start)
         fmt.Println("Time elapsed: ", duration)
 

@@ -1,7 +1,6 @@
 package day03
 
 import (
-    "fmt"
     "io/ioutil"
     "os"
     "strings"
@@ -84,16 +83,15 @@ func calculateGammaEpsilon(lines []string) int64 {
     return epsilon * gamma
 }
 
-func Day03() {
+func Day03() (int, int) {
     pwd, _ := os.Getwd()
     data, _ := ioutil.ReadFile(pwd + "/day03/input")
     file_string := string(data)
     lines := strings.Split(file_string, "\n")
     answer := calculateGammaEpsilon(lines)
-    fmt.Println("task 1: ", answer)
     var ox, co2 int64
     ox = filterBits(lines, 0, true)
     co2 = filterBits(lines, 0, false)
-    fmt.Println("task 2: ", ox * co2)
+    return int(answer), int(ox* co2)
 
 }

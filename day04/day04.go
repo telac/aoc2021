@@ -1,7 +1,6 @@
 package day04
 
 import (
-    "fmt"
     "io/ioutil"
     "os"
     "strings"
@@ -150,20 +149,19 @@ func getWinningBoards(moves []int, boards [][]int) []winStats {
     return winningBoards
 }
 
-func Day04() {
+func Day04() (int, int){
     pwd, _ := os.Getwd()
     data, _ := ioutil.ReadFile(pwd + "/day04/input")
     file_string := string(data)
     lines := strings.Split(file_string, "\n")
     moves := readMoves(lines[0])
     boards := readBoards(lines)
-    val := getWinner(moves, boards)
-    fmt.Println(val)
+    a1 := getWinner(moves, boards)
 
     winningBoards := getWinningBoards(moves, boards)
-    fmt.Println(
-        getPoints(
-            winningBoards[len(winningBoards)-1].board, 
-            winningBoards[len(winningBoards)-1].lastMove),
-        )
+    a2 := getPoints(
+        winningBoards[len(winningBoards)-1].board, 
+        winningBoards[len(winningBoards)-1].lastMove,
+    )
+    return a1, a2
 }

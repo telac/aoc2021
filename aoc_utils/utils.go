@@ -1,5 +1,12 @@
 package utils
 
+import (
+    "bufio"
+    "fmt"
+    "os"
+    "strconv"
+)
+
 func ReadLines() []int {
     var nums []int
     scanner := bufio.NewScanner(os.Stdin)
@@ -19,8 +26,8 @@ func ReadLines() []int {
     return nums
 }
 
-func ReadStrLines() []str {
-    var lines []str
+func ReadStrLines() []string {
+    var lines []string
     scanner := bufio.NewScanner(os.Stdin)
     for scanner.Scan() {
         line := scanner.Text()
@@ -29,7 +36,12 @@ func ReadStrLines() []str {
                 break
             }
         }
-        nums = append(nums, line)
+        nums = append(lines, line)
     }
     return lines
+}
+
+type Solution struct {
+    part1 int
+    part2 int
 }
