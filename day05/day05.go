@@ -100,16 +100,22 @@ func buildLines(board Board) []int {
 		horizontalDistance := horizontalEndpoint - horizontalStartpoint
 		verticalDistance := verticalEndpoint - verticalStartpoint
 		if horizontalDistance > 0 && verticalDistance > 0  {
-			fmt.Println(coords)
-			fmt.Println("diagonal line")
-			/*
-			var verticalPoint = verticalStartpoint
-			for i := horizontalStartpoint; i <= horizontalEndpoint; i++ {
-				verticalPoint += 1
-				coord := i + board.nx * verticalPoint
-				lines[coord] += 1
+			startY := coords.y1
+			endY := coords.y2
+			if coords.x1 > coords.x2 {
+				startY = coords.y2
+				endY = coords.y1
 			}
-			*/
+			upwards := startY < endY
+			verticalPoint := startY
+			for i := horizontalStartpoint; i <= horizontalEndpoint; i++ {
+				lines[i + board.nx * verticalPoint] += 1
+				if upwards {
+					verticalPoint += 1
+				} else {
+					verticalPoint -= 1
+				}
+			}
 		} else if horizontalDistance > 0 {
 
 			for i := horizontalStartpoint; i <= horizontalEndpoint; i++ {
@@ -146,7 +152,7 @@ func countPoints(intersections []int) int {
 
 func Day05() {
 	pwd, _ := os.Getwd()
-    data, _ := ioutil.ReadFile(pwd + "/day05/example")
+    data, _ := ioutil.ReadFile(pwd + "/day05/input")
 	lines := strings.Split(string(data), "\n")
 	board := buildBoard(lines)
 	intersections := buildLines(board)
