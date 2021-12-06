@@ -7,6 +7,7 @@ import (
     "aoc/day03"
     "aoc/day04"
     "aoc/day05"
+    "aoc/day06"
     "time"
     "fmt"
     "strconv"
@@ -20,6 +21,7 @@ func main() {
         3: day03.Day03,
         4: day04.Day04,
         5: day05.Day05,
+        6: day06.Day06,
     }
     
     if len(os.Args) > 1 {
