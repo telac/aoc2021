@@ -1,10 +1,10 @@
 package day06
 
 import (
-    "io/ioutil"
-    "os"
-    "strings"
-    "strconv"
+	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
 	"sync"
 	//"fmt"
 )
@@ -15,7 +15,7 @@ func getNumbers(line string) []int {
 	for i, s := range numbers {
 		val, _ := strconv.Atoi(strings.TrimSpace(s))
 		in[i] = val
-		
+
 	}
 	return in
 }
@@ -41,7 +41,6 @@ func simulateFish(startNum int, numDays int, index int, result []int, wg *sync.W
 	result[index] = len(fishSlice)
 }
 
-
 func simulateFishMap(startNum int, numDays int, index int, result []int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	var fishMap = make(map[int]int, 9)
@@ -56,30 +55,29 @@ func simulateFishMap(startNum int, numDays int, index int, result []int, wg *syn
 			tempMap[i] = 0
 		}
 		for key, _ := range fishMap {
-			if key == 0  {
+			if key == 0 {
 				tempMap[6] += fishMap[0]
 				tempMap[8] += fishMap[0]
 			} else {
-				tempMap[key - 1] += fishMap[key]
+				tempMap[key-1] += fishMap[key]
 			}
 
 		}
 		/*
-		if index == 0 {
-			fmt.Println("before", fishMap)
-		}
+			if index == 0 {
+				fmt.Println("before", fishMap)
+			}
 		*/
 		for key, _ := range tempMap {
 			fishMap[key] = tempMap[key]
 		}
-				/*
-		if index == 0 {
-			fmt.Println("after", fishMap)
-		}
+		/*
+			if index == 0 {
+				fmt.Println("after", fishMap)
+			}
 		*/
 
 	}
-
 
 	var sum int
 	for _, val := range fishMap {
@@ -88,7 +86,7 @@ func simulateFishMap(startNum int, numDays int, index int, result []int, wg *syn
 	result[index] = sum
 }
 
-func task(numbers []int, days int) int{
+func task(numbers []int, days int) int {
 	results := make([]int, len(numbers))
 	var wg sync.WaitGroup
 	for i, val := range numbers {
@@ -103,12 +101,11 @@ func task(numbers []int, days int) int{
 	return sum
 }
 
-
 func Day06() (int, int) {
 	pwd, _ := os.Getwd()
-    data, _ := ioutil.ReadFile(pwd + "/day06/input")
+	data, _ := ioutil.ReadFile(pwd + "/day06/input")
 	lines := strings.Split(string(data), "\n")
 	numbers := getNumbers(lines[0])
 	return task(numbers, 80), task(numbers, 256)
-		
+
 }

@@ -1,11 +1,11 @@
 package day05
 
 import (
-    "fmt"
-    "io/ioutil"
-    "os"
-    "strings"
-    "strconv"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type Coordinates struct {
@@ -16,8 +16,8 @@ type Coordinates struct {
 }
 
 type Board struct {
-	nx int
-	ny int
+	nx          int
+	ny          int
 	coordinates []Coordinates
 }
 
@@ -40,7 +40,6 @@ func getCoordinates(line string) Coordinates {
 		x2: x2,
 		y2: y2,
 	}
-	 
 
 }
 
@@ -69,8 +68,8 @@ func buildBoard(lines []string) Board {
 		coords = append(coords, coordinates)
 	}
 	return Board{
-		nx: maxWidth + 1,
-		ny: maxDepth + 1,
+		nx:          maxWidth + 1,
+		ny:          maxDepth + 1,
 		coordinates: coords,
 	}
 
@@ -91,7 +90,7 @@ func min(x int, y int) int {
 }
 
 func buildLines(board Board, vertical bool) []int {
-	lines := make([]int, board.nx * board.ny)
+	lines := make([]int, board.nx*board.ny)
 	for _, coords := range board.coordinates {
 		horizontalStartpoint := min(coords.x1, coords.x2)
 		horizontalEndpoint := max(coords.x1, coords.x2)
@@ -99,7 +98,7 @@ func buildLines(board Board, vertical bool) []int {
 		verticalEndpoint := max(coords.y1, coords.y2)
 		horizontalDistance := horizontalEndpoint - horizontalStartpoint
 		verticalDistance := verticalEndpoint - verticalStartpoint
-		if horizontalDistance > 0 && verticalDistance > 0 && vertical  {
+		if horizontalDistance > 0 && verticalDistance > 0 && vertical {
 			startY := coords.y1
 			endY := coords.y2
 			if coords.x1 > coords.x2 {
@@ -109,7 +108,7 @@ func buildLines(board Board, vertical bool) []int {
 			upwards := startY < endY
 			verticalPoint := startY
 			for i := horizontalStartpoint; i <= horizontalEndpoint; i++ {
-				lines[i + board.nx * verticalPoint] += 1
+				lines[i+board.nx*verticalPoint] += 1
 				if upwards {
 					verticalPoint += 1
 				} else {
@@ -119,11 +118,11 @@ func buildLines(board Board, vertical bool) []int {
 		} else if horizontalDistance > 0 {
 
 			for i := horizontalStartpoint; i <= horizontalEndpoint; i++ {
-				lines[i + board.nx * coords.y1] += 1
+				lines[i+board.nx*coords.y1] += 1
 			}
 		} else {
 			for i := verticalStartpoint; i <= verticalEndpoint; i++ {
-				lines[coords.x1 + board.nx * i] += 1
+				lines[coords.x1+board.nx*i] += 1
 			}
 		}
 	}
@@ -132,9 +131,9 @@ func buildLines(board Board, vertical bool) []int {
 
 func visualizeBoard(intersections []int, board Board) {
 	lineBuf := make([]int, board.nx)
-	for i := 0; i < board.nx * board.ny; i++ {
-		lineBuf[i % board.nx] = intersections[i]
-		if i % board.nx == board.nx - 1 {
+	for i := 0; i < board.nx*board.ny; i++ {
+		lineBuf[i%board.nx] = intersections[i]
+		if i%board.nx == board.nx-1 {
 			fmt.Println(lineBuf)
 		}
 	}
@@ -152,7 +151,7 @@ func countPoints(intersections []int) int {
 
 func Day05() (int, int) {
 	pwd, _ := os.Getwd()
-    data, _ := ioutil.ReadFile(pwd + "/day05/input")
+	data, _ := ioutil.ReadFile(pwd + "/day05/input")
 	lines := strings.Split(string(data), "\n")
 	board := buildBoard(lines)
 	intersections1 := buildLines(board, false)
@@ -162,5 +161,5 @@ func Day05() (int, int) {
 	points2 := countPoints(intersections2)
 	//visualizeBoard(intersections2, board)
 	return points1, points2
-		
+
 }
