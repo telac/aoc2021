@@ -88,27 +88,12 @@ func simulateFishMap(startNum int, numDays int, index int, result []int, wg *syn
 	result[index] = sum
 }
 
-func task1(numbers []int) int{
+func task(numbers []int, days int) int{
 	results := make([]int, len(numbers))
 	var wg sync.WaitGroup
 	for i, val := range numbers {
 		wg.Add(1)
-		go simulateFishMap(val, 80, i, results, &wg)
-	}
-	wg.Wait()
-	var sum int
-	for _, val := range results {
-		sum += val
-	}
-	return sum
-}
-
-func task2(numbers []int) int {
-	results := make([]int, len(numbers))
-	var wg sync.WaitGroup
-	for i, val := range numbers {
-		wg.Add(1)
-		go simulateFishMap(val, 256, i, results, &wg)
+		go simulateFishMap(val, days, i, results, &wg)
 	}
 	wg.Wait()
 	var sum int
@@ -124,6 +109,6 @@ func Day06() (int, int) {
     data, _ := ioutil.ReadFile(pwd + "/day06/input")
 	lines := strings.Split(string(data), "\n")
 	numbers := getNumbers(lines[0])
-	return task1(numbers), task2(numbers)
+	return task(numbers, 80), task(numbers, 256)
 		
 }
