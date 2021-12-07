@@ -7,6 +7,7 @@ import (
 	"aoc/day04"
 	"aoc/day05"
 	"aoc/day06"
+	"aoc/day07"
 	"fmt"
 	"os"
 	"sort"
@@ -22,6 +23,7 @@ func main() {
 		4: day04.Day04,
 		5: day05.Day05,
 		6: day06.Day06,
+		7: day07.Day07,
 	}
 
 	if len(os.Args) > 1 {
@@ -44,12 +46,7 @@ func main() {
 			taskTimer := time.Now()
 			tasks[day]()
 			taskDuration := time.Since(taskTimer)
-			var cutoff time.Duration = 500 * time.Microsecond
-			if taskDuration < cutoff {
-				fmt.Println("Day: ", day, " Duration: ", "< 500 µs")
-			} else {
-				fmt.Println("Day: ", day, " Duration: ", taskDuration)
-			}
+			fmt.Println("Day: ", day, " Duration: ", taskDuration)
 
 		}
 		totalDuration := time.Since(totalTime)
