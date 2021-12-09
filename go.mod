@@ -12,5 +12,6 @@ replace (
     aoc/day06 => ./day06/day06
     aoc/day07 => ./day07/day07
     aoc/day08 => ./day08/day08
+    aoc/day09 => ./day09/day09
 
 )
