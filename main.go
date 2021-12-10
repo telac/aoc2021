@@ -10,6 +10,7 @@ import (
 	"aoc/day07"
 	"aoc/day08"
 	"aoc/day09"
+	"aoc/day10"
 	"fmt"
 	"os"
 	"sort"
@@ -28,6 +29,7 @@ func main() {
 		7: day07.Day07,
 		8: day08.Day08,
 		9: day09.Day09,
+		10: day10.Day10,
 	}
 
 	if len(os.Args) > 1 {
