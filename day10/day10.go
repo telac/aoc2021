@@ -30,7 +30,6 @@ func completeLine(line string, expected []string) int {
 			points += 4
 		}
 	}
-	fmt.Println(line, expected, points)
 	return points
 }
 
@@ -82,7 +81,6 @@ func part1(lines []string) (int, int) {
 		} else {
 			incompleteLines = append(incompleteLines, line)
 			points2 = append(points2, completeLine(line,expected))
-			fmt.Println(points2)
 		}
 
 	}
