@@ -69,7 +69,7 @@ func buildGraph(lines []string) Graph {
 	}
 	return g
 }
-func (g *Graph) String() {
+func (g *Graph) ToString() {
 	s := ""
 	for i := 0; i < len(g.nodes); i++ {
 		s += g.nodes[i].value + " <-> "
