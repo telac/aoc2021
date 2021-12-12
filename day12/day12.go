@@ -86,8 +86,6 @@ func isUpper(s string) bool {
 	return strings.ToUpper(s) == s
 }
 
-var count = 0
-
 func findPath(start *Node, end *Node, g Graph, visitedNodes map[Node]bool, path []string) int {
 	count := 0
 	visitedNodes[*start] = true
