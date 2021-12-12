@@ -159,6 +159,5 @@ func Day12() (int, int) {
 	var p []string
 	p1 := findPath(g.start, g.end, g, visited, p)
 	p2 := findPathTwice(g.start, g.end, g, visitCount, false, p)
-	g.String()
 	return p1, p2
 }
