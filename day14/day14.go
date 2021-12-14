@@ -153,6 +153,7 @@ func Day14() (int, int) {
 	lines := strings.Split(string(parts[1]), "\n")
 	mappings := getPairs(lines)
 	counts := growPolymerMap(polymerMapFromString(seq), mappings, 10)
+	counts = addSeqToCounts(seq, counts)
 	smallestCount := min(counts)
 	biggestCount := max(counts)
 	polyMap := growPolymerMap(polymerMapFromString(seq), mappings, 40)
