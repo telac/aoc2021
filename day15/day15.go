@@ -64,6 +64,7 @@ type Board struct {
 	board    []int
 	distance []int
 	visited  []bool
+	items    []*Item
 	nx       int
 	ny       int
 }
@@ -73,6 +74,7 @@ func readBoard(lines []string) Board {
 	var distance []int
 	var visited []bool
 	var nx, ny int
+	var items []*Item
 	nx = len(lines[0])
 	ny = len(lines) - 1
 	for _, line := range lines {
@@ -84,6 +86,7 @@ func readBoard(lines []string) Board {
 			board = append(board, ival)
 			distance = append(distance, math.MaxInt64)
 			visited = append(visited, false)
+			items = append(items, nil)
 		}
 
 	}
@@ -92,6 +95,7 @@ func readBoard(lines []string) Board {
 		board:    board,
 		distance: distance,
 		visited:  visited,
+		items:    items,
 		nx:       nx,
 		ny:       ny,
 	}
@@ -118,7 +122,7 @@ func getNeighborIndexes(b Board, index int) []int {
 	}
 	var n []int
 	for _, coord := range neighbors {
-		if isValid(coord.x, coord.y, b) {
+		if isValid(coord.x, coord.y, b) && !b.visited[coord.x+b.nx*coord.y] {
 			n = append(n, coord.x+b.nx*coord.y)
 		}
 	}
@@ -129,7 +133,7 @@ func visualizeBoard(b Board) {
 	fmt.Println()
 	lineBuf := make([]int, b.nx)
 	for i := 0; i < b.nx*b.ny; i++ {
-		lineBuf[i%b.nx] = b.board[i]
+		lineBuf[i%b.nx] = b.distance[i]
 		if i%b.nx == b.nx-1 {
 			fmt.Println(lineBuf)
 		}
@@ -154,6 +158,7 @@ func enlargeMap(b Board) Board {
 	newBoard := make([]int, b.nx*b.ny*25)
 	distance := make([]int, b.nx*b.ny*25)
 	visited := make([]bool, b.nx*b.ny*25)
+	items := make([]*Item, b.nx*b.ny*25)
 	for yAxis := 0; yAxis < 5; yAxis++ {
 		for xAxis := 0; xAxis < 5; xAxis++ {
 			for i, v := range b.board {
@@ -172,41 +177,51 @@ func enlargeMap(b Board) Board {
 			}
 		}
 	}
+	distance[0] = 0
 	return Board{
 		board:    newBoard,
 		nx:       b.nx * 5,
 		ny:       b.ny * 5,
 		distance: distance,
 		visited:  visited,
+		items:    items,
 	}
 
 }
-func Dijkstra(b Board, start int, end int) Board {
-	//var path []int
-	counter := 0
+
+func dijsktra(b Board, start int, end int) Board {
+
 	var pq PriorityQueue
 	heap.Init(&pq)
-	heap.Push(&pq, &Item{
-		priority:   0,
-		index:      0,
-		boardIndex: 0,
-	})
-	b.distance[0] = 0
+	for k, v := range b.distance {
+		item := &Item{
+			priority:   v,
+			boardIndex: k,
+		}
+		b.items[k] = item
+		heap.Push(&pq, item)
+	}
+
+	counter := 0
 	for pq.Len() > 0 {
-		counter += 1
+
+		counter++
 		current := heap.Pop(&pq).(*Item)
-		neighbors := getNeighborIndexes(b, current.boardIndex)
+
+		if current.boardIndex == end {
+			return b
+		}
+
 		b.visited[current.boardIndex] = true
+
+		neighbors := getNeighborIndexes(b, current.boardIndex)
+
 		for _, index := range neighbors {
 			if !b.visited[index] {
 				alt := current.priority + b.board[index]
-				heap.Push(&pq, &Item{
-					priority:   alt,
-					index:      index,
-					boardIndex: index,
-				})
 				if alt < b.distance[index] {
 					b.distance[index] = alt
+					pq.update(b.items[index], alt)
 				}
 			}
 		}
@@ -220,11 +235,12 @@ func Day15() (int, int) {
 	data, _ := ioutil.ReadFile(pwd + "/day15/input")
 	lines := strings.Split(string(data), "\n")
 	board := readBoard(lines)
-	//fmt.Println(board)
-	b := Dijkstra(board, 0, 99)
+	visualizeBoard(board)
+	b := dijsktra(board, 0, len(board.distance)-1)
+	visualizeBoard(b)
 	enlargedMap := enlargeMap(readBoard(lines))
 	visualizeBoard(enlargedMap)
-	c := Dijkstra(enlargedMap, 0, 2499)
+	c := dijsktra(enlargedMap, 0, len(enlargedMap.distance)-1)
 	visualizeBoard(enlargedMap)
 	return b.distance[len(b.distance)-1], c.distance[len(c.distance)-1]
 }
