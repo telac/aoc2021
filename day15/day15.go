@@ -129,7 +129,7 @@ func visualizeBoard(b Board) {
 	fmt.Println()
 	lineBuf := make([]int, b.nx)
 	for i := 0; i < b.nx*b.ny; i++ {
-		lineBuf[i%b.nx] = b.distance[i]
+		lineBuf[i%b.nx] = b.board[i]
 		if i%b.nx == b.nx-1 {
 			fmt.Println(lineBuf)
 		}
@@ -148,6 +148,38 @@ func popEverything(pq PriorityQueue) {
 		item := heap.Pop(&pq).(*Item)
 		fmt.Printf("%.2d  %.2d   %.2d \n", item.priority, item.boardIndex, item.index)
 	}
+}
+
+func enlargeMap(b Board) Board {
+	newBoard := make([]int, b.nx*b.ny*25)
+	distance := make([]int, b.nx*b.ny*25)
+	visited := make([]bool, b.nx*b.ny*25)
+	for yAxis := 0; yAxis < 5; yAxis++ {
+		for xAxis := 0; xAxis < 5; xAxis++ {
+			for i, v := range b.board {
+				x := i % b.nx
+				y := i / b.nx
+
+				newVal := v + xAxis + yAxis
+				if newVal > 9 {
+					newVal = (newVal % 10) + 1
+				}
+				newX := x + (xAxis * b.nx)
+				newY := y + (yAxis * b.ny)
+				newBoard[newX+b.nx*5*newY] = newVal
+				distance[newX+b.nx*5*newY] = math.MaxInt64
+				visited[newX+b.nx*5*newY] = false
+			}
+		}
+	}
+	return Board{
+		board:    newBoard,
+		nx:       b.nx * 5,
+		ny:       b.ny * 5,
+		distance: distance,
+		visited:  visited,
+	}
+
 }
 func Dijkstra(b Board, start int, end int) Board {
 	//var path []int
@@ -190,5 +222,9 @@ func Day15() (int, int) {
 	board := readBoard(lines)
 	//fmt.Println(board)
 	b := Dijkstra(board, 0, 99)
-	return b.distance[len(b.distance)-1], 1
+	enlargedMap := enlargeMap(readBoard(lines))
+	visualizeBoard(enlargedMap)
+	c := Dijkstra(enlargedMap, 0, 2499)
+	visualizeBoard(enlargedMap)
+	return b.distance[len(b.distance)-1], c.distance[len(c.distance)-1]
 }
