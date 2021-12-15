@@ -11,12 +11,13 @@ import (
 
 const nx = 10
 const ny = 10
+
 type Coords struct {
 	x int
 	y int
 }
 
-func readBoard(lines []string) []int{
+func readBoard(lines []string) []int {
 	var board []int
 	for _, line := range lines {
 		if len(line) < 2 {
@@ -26,7 +27,7 @@ func readBoard(lines []string) []int{
 			ival, _ := strconv.Atoi(string(c))
 			board = append(board, ival)
 		}
-		
+
 	}
 	return board
 }
@@ -34,7 +35,7 @@ func readBoard(lines []string) []int{
 func isValid(x int, y int) bool {
 	if x < 0 || x >= nx {
 		return false
-	} 
+	}
 	if y < 0 || y >= ny {
 		return false
 	}
@@ -43,14 +44,14 @@ func isValid(x int, y int) bool {
 func flashNeighbors(board []int, x int, y int) int {
 	numFlashes := 0
 	var neighbors = []Coords{
-		Coords{x : x, y : y + 1},
-		Coords{x : x, y : y - 1},
-		Coords{x : x + 1, y : y},
-		Coords{x : x - 1, y : y},
-		Coords{x : x - 1, y : y - 1},
-		Coords{x : x + 1, y : y + 1},
-		Coords{x : x + 1, y : y - 1},
-		Coords{x : x - 1, y : y + 1},
+		Coords{x: x, y: y + 1},
+		Coords{x: x, y: y - 1},
+		Coords{x: x + 1, y: y},
+		Coords{x: x - 1, y: y},
+		Coords{x: x - 1, y: y - 1},
+		Coords{x: x + 1, y: y + 1},
+		Coords{x: x + 1, y: y - 1},
+		Coords{x: x - 1, y: y + 1},
 	}
 	for _, coord := range neighbors {
 		if isValid(coord.x, coord.y) {
@@ -65,8 +66,8 @@ func flashNeighbors(board []int, x int, y int) int {
 }
 
 func incrementAndFlash(board []int, x int, y int) int {
-	board[x + nx * y] += 1
-	if board[x + nx * y] == 10 {
+	board[x+nx*y] += 1
+	if board[x+nx*y] == 10 {
 		return 1
 	}
 	return 0
@@ -74,7 +75,7 @@ func incrementAndFlash(board []int, x int, y int) int {
 
 func resetBoard(board []int) int {
 	resetSquares := 0
-	for i := 0; i < nx * ny; i++ {
+	for i := 0; i < nx*ny; i++ {
 		if board[i] > 9 {
 			board[i] = 0
 			resetSquares += 1
@@ -89,20 +90,20 @@ func evaluateTurn(board []int) int {
 		for x := 0; x < nx; x++ {
 			numFlashes += incrementAndFlash(board, x, y)
 			// flash neighbors
-			if board[x + nx * y] == 10 {
+			if board[x+nx*y] == 10 {
 				numFlashes += flashNeighbors(board, x, y)
 			}
 		}
-		
+
 	}
 	return numFlashes
-} 
+}
 
 func visualizeBoard(b []int) {
 	lineBuf := make([]int, nx)
 	for i := 0; i < nx*ny; i++ {
-		lineBuf[i % nx] = b[i]
-		if i % nx == nx - 1 {
+		lineBuf[i%nx] = b[i]
+		if i%nx == nx-1 {
 			fmt.Println(lineBuf)
 		}
 	}
