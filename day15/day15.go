@@ -235,12 +235,8 @@ func Day15() (int, int) {
 	data, _ := ioutil.ReadFile(pwd + "/day15/input")
 	lines := strings.Split(string(data), "\n")
 	board := readBoard(lines)
-	visualizeBoard(board)
 	b := dijsktra(board, 0, len(board.distance)-1)
-	visualizeBoard(b)
 	enlargedMap := enlargeMap(readBoard(lines))
-	visualizeBoard(enlargedMap)
 	c := dijsktra(enlargedMap, 0, len(enlargedMap.distance)-1)
-	visualizeBoard(enlargedMap)
 	return b.distance[len(b.distance)-1], c.distance[len(c.distance)-1]
 }
