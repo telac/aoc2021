@@ -1,9 +1,9 @@
 package day13
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
-	"fmt"
 	"strconv"
 	"strings"
 	//"sort"
@@ -11,8 +11,8 @@ import (
 
 type Board struct {
 	board []int
-	nx int
-	ny int
+	nx    int
+	ny    int
 }
 
 func readBoardAndInstructions(lines []string) (Board, []string) {
@@ -34,10 +34,10 @@ func readBoardAndInstructions(lines []string) (Board, []string) {
 			coords := strings.Split(string(line), ",")
 			x, _ := strconv.Atoi(coords[0])
 			y, _ := strconv.Atoi(coords[1])
-			if x + 1 > nx {
+			if x+1 > nx {
 				nx = x + 1
 			}
-			if y + 1 > ny {
+			if y+1 > ny {
 				ny = y + 1
 			}
 			coordsList = append(coordsList, []int{x, y})
@@ -46,13 +46,13 @@ func readBoardAndInstructions(lines []string) (Board, []string) {
 	}
 	board := make([]int, nx*ny)
 	for _, val := range coordsList {
-		board[val[0] + nx * val[1]] = 1
+		board[val[0]+nx*val[1]] = 1
 	}
 
 	b := Board{
-		board : board,
-		nx : nx,
-		ny:ny,
+		board: board,
+		nx:    nx,
+		ny:    ny,
 	}
 	return b, instructions
 }
@@ -79,61 +79,58 @@ func fold(b Board, instruction string) (Board, int) {
 			switch axis {
 			case "x":
 				shift := (magnitude - x) + magnitude
-				left := b.board[x + b.nx * y]
-				right := b.board[shift + b.nx * y]
+				left := b.board[x+b.nx*y]
+				right := b.board[shift+b.nx*y]
 				if left == 1 || right == 1 {
 					dots++
-					boardNew[x + nxNew * y] = 1
+					boardNew[x+nxNew*y] = 1
 				} else {
-					boardNew[x + nxNew * y] = 0
+					boardNew[x+nxNew*y] = 0
 				}
 			case "y":
 				shift := (magnitude - y) + magnitude
-				up := b.board[x + b.nx * y]
-				down := b.board[x + b.nx * shift]
+				up := b.board[x+b.nx*y]
+				down := b.board[x+b.nx*shift]
 				if up == 1 || down == 1 {
 					dots++
-					boardNew[x + nxNew * y] = 1
+					boardNew[x+nxNew*y] = 1
 				} else {
-					boardNew[x + nxNew * y] = 0
+					boardNew[x+nxNew*y] = 0
 				}
 
 			}
 		}
 	}
 	return Board{
-		board : boardNew,
-		nx : nxNew,
-		ny : nyNew,
-	},
-	dots
+			board: boardNew,
+			nx:    nxNew,
+			ny:    nyNew,
+		},
+		dots
 
 }
 
 func visualizeBoard(b Board) {
 	lineBuf := make([]string, b.nx)
-	for i := 0; i < b.nx * b.ny; i++ {
+	for i := 0; i < b.nx*b.ny; i++ {
 		if b.board[i] == 1 {
-			lineBuf[i % b.nx] = "#"
+			lineBuf[i%b.nx] = "#"
 		} else {
-			lineBuf[i % b.nx] = "."
+			lineBuf[i%b.nx] = "."
 		}
-		
-		if i % b.nx == b.nx - 1 {
+
+		if i%b.nx == b.nx-1 {
 			fmt.Println(lineBuf)
 		}
 	}
 }
 
-
 func FoldPaper(board Board, instructions []string) {
 	b := board
-	c := 0
 	for _, instruction := range instructions {
-		b, c = fold(b, instruction)
-		visualizeBoard(b)
-		fmt.Println(c)
+		b, _ = fold(b, instruction)
 	}
+	//visualizeBoard(b)
 }
 func Day13() (int, int) {
 	pwd, _ := os.Getwd()
