@@ -1,38 +1,44 @@
 package day16
 
 import (
-	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"strings"
 
 	//"strings"
 	"strconv"
+
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 type Packet struct {
+	uuid    string
 	version int64
 	id      int64
 	tp      string
+	parent  *Packet
+	depth   int64
 	value   int64
 	length  int64
 }
 
-func readPackage(elfCode string, offset int64) ([]Packet, int64) {
+func readPackageMap(elfCode string, offset int64, depth int64, parent *Packet) ([]*Packet, map[Packet][]*Packet, int64) {
+	var packets []*Packet
+
+	edges := make(map[Packet][]*Packet)
 	lengths := map[int64]int{
 		0: 15,
 		1: 11,
 	}
 	id, _ := strconv.ParseInt(elfCode[offset+3:offset+6], 2, 64)
-	//fmt.Println("found version|id", elfCode[offset:])
-	//fmt.Println("offset is now:", offset)
-	var packets []Packet
 	switch id {
 	case 4:
-		packet := readLiteral(elfCode, offset)
+		packet := readLiteral(elfCode, offset, depth, parent)
 		offset += packet.length
-		packets = append(packets, packet)
-		return packets, offset
+		packets = append(packets, &packet)
+		edges[packet] = append(edges[packet], nil)
+		return packets, edges, offset
 	default:
 		version, _ := strconv.ParseInt(elfCode[offset:offset+3], 2, 64)
 		offset += 3
@@ -42,44 +48,141 @@ func readPackage(elfCode string, offset int64) ([]Packet, int64) {
 		offset += 1
 		subOperatorLength := int64(lengths[lengthType])
 		msgLength, _ := strconv.ParseInt(elfCode[offset:offset+subOperatorLength], 2, 64)
-		//fmt.Println(elfCode[offset : offset+subOperatorLength])
 		offset += subOperatorLength
 		oldOffset := offset
 		switch lengthType {
 		case 0:
-			packets = append(packets, Packet{
+			//you basically need luck to get the solution right, but i got it after a few attempts. a GUID would be cool i guess.
+			u, _ := uuid.NewV4()
+			cPacket := &Packet{
 				version: version,
 				id:      id,
 				value:   -1,
 				tp:      "operator",
+				uuid:    u.String(),
+				depth:   depth,
+				parent:  parent,
 				length:  7 + subOperatorLength,
-			})
-			fmt.Println(offset, msgLength, subOperatorLength)
+			}
+			packets = append(packets, cPacket)
 			for offset < (msgLength + oldOffset) {
-				newPackets, newOffset := readPackage(elfCode, offset)
+				newPackets, _, newOffset := readPackageMap(elfCode, offset, depth+1, cPacket)
 				offset = newOffset
 				packets = append(packets, newPackets...)
+
 			}
 		case 1:
-			packets = append(packets, Packet{
+			u, _ := uuid.NewV4()
+			cPacket := &Packet{
 				version: version,
 				id:      id,
 				value:   -1,
 				tp:      "operator",
+				uuid:    u.String(),
+				depth:   depth,
+				parent:  parent,
 				length:  7 + subOperatorLength,
-			})
-			fmt.Println("reading total of ", msgLength, "packages")
+			}
+			packets = append(packets, cPacket)
 			for i := 0; i < int(msgLength); i++ {
-				newPackets, newOffset := readPackage(elfCode, offset)
+				newPackets, _, newOffset := readPackageMap(elfCode, offset, depth+1, cPacket)
 				offset = newOffset
 				packets = append(packets, newPackets...)
+
 			}
+
 		}
 	}
-	return packets, offset
+	return packets, edges, offset
 }
 
-func readLiteral(elfCode string, offset int64) Packet {
+func makeEdges(packets []*Packet) map[Packet][]*Packet {
+	edges := make(map[Packet][]*Packet)
+	for _, v := range packets {
+		if v.parent != nil {
+			edges[*v.parent] = append(edges[*v.parent], v)
+		}
+	}
+	return edges
+}
+
+func handleOperation(packetAddr *Packet, edges map[Packet][]*Packet) int64 {
+	var value int64
+	packet := *packetAddr
+	//fmt.Printf("%p \n", packetAddr)
+	switch packet.id {
+	case 0:
+		var sum int64
+		sum = 0
+		var values []int64
+		for _, v := range edges[packet] {
+			temp := handleOperation(v, edges)
+			values = append(values, temp)
+			sum += temp
+		}
+		value = sum
+	case 1:
+		var product int64
+		product = 1
+		for _, v := range edges[packet] {
+			tmp := handleOperation(v, edges)
+			product *= tmp
+		}
+		value = product
+	case 2:
+		var min int64
+		min = math.MaxInt64
+		for _, v := range edges[packet] {
+			tMin := handleOperation(v, edges)
+			if tMin < min {
+				min = tMin
+			}
+		}
+		value = min
+	case 3:
+		var max int64
+		max = 0
+		for _, v := range edges[packet] {
+			tmax := handleOperation(v, edges)
+			if tmax > max {
+				max = tmax
+			}
+		}
+		value = max
+	case 4:
+		value = packet.value
+	case 5:
+
+		val1 := handleOperation(edges[packet][0], edges)
+		val2 := handleOperation(edges[packet][1], edges)
+		if val1 > val2 {
+			value = 1
+		} else {
+			value = 0
+		}
+
+	case 6:
+		val1 := handleOperation(edges[packet][0], edges)
+		val2 := handleOperation(edges[packet][1], edges)
+		if val1 < val2 {
+			value = 1
+		} else {
+			value = 0
+		}
+
+	case 7:
+		val1 := handleOperation(edges[packet][0], edges)
+		val2 := handleOperation(edges[packet][1], edges)
+		if val1 == val2 {
+			value = 1
+		} else {
+			value = 0
+		}
+	}
+	return value
+}
+
+func readLiteral(elfCode string, offset int64, depth int64, parent *Packet) Packet {
 	origOffset := offset
 	version, _ := strconv.ParseInt(elfCode[offset:offset+3], 2, 64)
 	offset += 3
@@ -96,27 +199,25 @@ func readLiteral(elfCode string, offset int64) Packet {
 		offset += 4
 	}
 	iBitvalue, _ := strconv.ParseInt(bitValue, 2, 64)
+	u, _ := uuid.NewV4()
 	return Packet{
 		version: version,
 		id:      id,
 		value:   iBitvalue,
 		tp:      "literal",
+		uuid:    u.String(),
+		depth:   depth,
+		parent:  parent,
 		length:  offset - origOffset,
 	}
 }
 
-func countVersions(packets []Packet) int {
+func countVersions(packets []*Packet) int {
 	var versionCount int64
 	for _, v := range packets {
 		versionCount += v.version
 	}
 	return int(versionCount)
-}
-
-func getPackages(elfCode string) []Packet {
-	packets, _ := readPackage(elfCode, 0)
-	fmt.Println(packets)
-	return packets
 }
 
 func toBinary(line string) string {
@@ -147,10 +248,11 @@ func toBinary(line string) string {
 
 func Day16() (int, int) {
 	pwd, _ := os.Getwd()
-	data, _ := ioutil.ReadFile(pwd + "/day16/example")
+	data, _ := ioutil.ReadFile(pwd + "/day16/input")
 	lines := strings.Split(string(data), "\n")
 	binaryValue := toBinary(lines[0])
-	fmt.Println(binaryValue)
-	packets := getPackages(binaryValue)
-	return countVersions(packets), 0
+	newpackets, _, _ := readPackageMap(binaryValue, 0, 0, nil)
+	newEdges := makeEdges(newpackets)
+	part2 := handleOperation(newpackets[0], newEdges)
+	return countVersions(newpackets), int(part2)
 }

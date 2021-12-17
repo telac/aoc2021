@@ -20,4 +20,7 @@ replace (
 	utils/utils => ./aoc_utils/utils
 )
 
-require github.com/yourbasic/graph v0.0.0-20210606180040-8ecfec1c2869 // indirect
+require (
+	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
+	github.com/yourbasic/graph v0.0.0-20210606180040-8ecfec1c2869 // indirect
+)
