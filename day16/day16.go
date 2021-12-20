@@ -52,7 +52,6 @@ func readPackageMap(elfCode string, offset int64, depth int64, parent *Packet) (
 		oldOffset := offset
 		switch lengthType {
 		case 0:
-			//you basically need luck to get the solution right, but i got it after a few attempts. a GUID would be cool i guess.
 			u, _ := uuid.NewV4()
 			cPacket := &Packet{
 				version: version,
